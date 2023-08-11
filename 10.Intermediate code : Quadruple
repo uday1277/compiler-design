@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Quadruple {
+    char op;
+    char arg1;
+    char arg2;
+    char result;
+};
+
+void generateQuadruple(char op, char arg1, char arg2, char result) {
+    printf("(%c, %c, %c, %c)\n", op, arg1, arg2, result);
+}
+
+int main() {
+    struct Quadruple quadList[100];
+    int quadCount = 0;
+    
+    char t1 = 't', t2 = 't', t3 = 't';
+    
+    // Example expressions
+    char a = 'a', b = 'b', c = 'c';
+    
+    generateQuadruple('+', a, b, t1);
+    generateQuadruple('*', t1, c, t2);
+    generateQuadruple('-', t2, b, t3);
+    generateQuadruple('=', t3, a, b);
+    
+    return 0;
+}
