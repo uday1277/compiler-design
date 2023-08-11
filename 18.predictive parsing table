@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <string.h>
+
+#define NUM_NON_TERMINALS 3
+#define NUM_TERMINALS 2
+
+enum NonTerminals { E, T, F };
+enum Terminals { PLUS, MULTIPLY, ID, END };
+
+// Grammar productions
+char productions[NUM_NON_TERMINALS][10][20] = {
+    {"T+E", "", "", ""},
+    {"F*T", "", "", ""},
+    {"(E)", "i", "", ""}
+};
+
+// Predictive parsing table
+char parsingTable[NUM_NON_TERMINALS][NUM_TERMINALS] = {
+    {'1', '0'},
+    {'', '1'},
+    {'2', ''}
+};
+
+int main() {
+    char input[50];
+    printf("Enter the input string: ");
+    scanf("%s", input);
+
+    strcat(input, "$"); // Adding end marker
+
+    char stack[50] = "$E"; // Initializing stack with start symbol
+    int stackPointer = 1;  // Points to the top of the stack
+
+    int inputPointer = 0;  // Points to the current input symbol
+
+    printf("\nStack\t\tInput\t\tAction\n");
+
+    while (stackPointer >= 0) {
+        printf("%s\t\t%s\t\t", stack, input + inputPointer);
+
+        char stackTop = stack[stackPointer];
+        char currentInput = input[inputPointer];
+
+        if (stackTop == currentInput) {
+            printf("Match %c\n", currentInput);
+            stackPointer--;
+            inputPointer++;
+        } else if (stackTop >= 'A' && stackTop <= 'Z') {
+            int nonTerminalIndex = stackTop - 'A';
+            int terminalIndex;
+
+            if (currentInput == '$') {
+                printf("Error: Reached end of input.\n");
+                break;
+            } else if (currentInput == 'i') {
+                terminalIndex = ID;
+            } else if (currentInput == '+') {
+                terminalIndex = PLUS;
+            } else if (currentInput == '*') {
+                terminalIndex = MULTIPLY;
+            } else {
+                printf("Error: Invalid input symbol.\n");
+                break;
+            }
+
+            char production = parsingTable[nonTerminalIndex][terminalIndex];
+            if (production == '\0') {
+                printf("Error: No production found.\n");
+                break;
+            } else if (production == '1') {
+                printf("Error: Mismatch between stack and input.\n");
+                break;
+            } else {
+                printf("Apply %s -> %s\n", productions[nonTerminalIndex][production - '0'], production);
+                stackPointer--;
+
+                // Push production onto the stack in reverse order
+                int i = strlen(productions[nonTerminalIndex][production - '0']) - 1;
+                while (i >= 0) {
+                    if (productions[nonTerminalIndex][production - '0'][i] != '\0') {
+                        stackPointer++;
+                        stack[stackPointer] = productions[nonTerminalIndex][production - '0'][i];
+                    }
+                    i--;
+                }
+            }
+        } else {
+            printf("Error: Mismatch between stack and input.\n");
+            break;
+        }
+    }
+
+    if (inputPointer == strlen(input)) {
+        printf("\nParsing Successful!\n");
+    } else {
+        printf("\nParsing Failed.\n");
+    }
+
+    return 0;
+}
