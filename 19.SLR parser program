@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <string.h>
+
+// Define your grammar productions, terminals, non-terminals, and parsing tables here
+
+// SLR parsing tables (action and goto tables)
+
+// Stack to keep track of states and symbols
+int stateStack[100];
+char symbolStack[100];
+int stackPointer = 0;
+
+// Function to perform the parsing
+void parseInput(char input[]) {
+    int currentState = 0;  // Starting state
+    int inputPointer = 0;  // Input token pointer
+
+    // Push initial state onto the stack
+    stateStack[stackPointer] = currentState;
+    stackPointer++;
+
+    while (1) {
+        int action = getAction(currentState, input[inputPointer]);
+        
+        if (action == SHIFT) {
+            int nextState = getNextState(currentState, input[inputPointer]);
+            stateStack[stackPointer] = nextState;
+            symbolStack[stackPointer] = input[inputPointer];
+            stackPointer++;
+            inputPointer++;
+        } else if (action == REDUCE) {
+            int productionIndex = getProductionIndexForReduce(currentState, input[inputPointer]);
+            int productionLength = getProductionLength(productionIndex);
+            
+            // Pop symbols and states from the stack
+            for (int i = 0; i < productionLength; i++) {
+                stackPointer--;
+            }
+            
+            int previousState = stateStack[stackPointer - 1];
+            char nonTerminal = getNonTerminalForReduce(productionIndex);
+            int gotoState = getGotoState(previousState, nonTerminal);
+            
+            stateStack[stackPointer] = gotoState;
+            symbolStack[stackPointer] = nonTerminal;
+            stackPointer++;
+        } else if (action == ACCEPT) {
+            printf("Parsing successful!\n");
+            break;
+        } else {
+            printf("Error: Parsing failed!\n");
+            break;
+        }
+    }
+}
+
+int main() {
+    char input[100];
+    printf("Enter the input string: ");
+    scanf("%s", input);
+
+    strcat(input, "$"); // Adding end marker
+
+    parseInput(input);
+
+    return 0;
+}
