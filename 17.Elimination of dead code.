@@ -1,0 +1,21 @@
+#include <stdio.h>
+
+int main() {
+    int x = 5;
+    int y = 10;
+    int z;
+
+    if (x > 0) {
+        z = x + y;
+    } else {
+        z = y - x;
+    }
+
+    // Dead code
+    int unusedVariable = 42;
+    printf("Unused variable: %d\n", unusedVariable);
+
+    printf("Result: %d\n", z);
+
+    return 0;
+}
