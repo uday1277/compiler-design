@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+#define NUM_PRODUCTIONS 3
+
+// Grammar productions
+char productions[NUM_PRODUCTIONS][20] = {
+    "E -> E + T",
+    "E -> T",
+    "T -> i"
+};
+
+// Recursive function to check if a string can be derived ambiguously
+bool isAmbiguous(char input[], int left, int right, int productionIndex) {
+    if (left == right) {
+        // Base case: a single terminal or non-terminal
+        if (input[left] == 'i') {
+            return productionIndex != 2; // T -> i is not ambiguous
+        }
+        return false;
+    }
+    
+    for (int i = left; i < right; i++) {
+        if (input[i] == '+') {
+            // Check if there's a possible split that leads to ambiguity
+            bool leftAmbiguous = isAmbiguous(input, left, i - 1, 0);
+            bool rightAmbiguous = isAmbiguous(input, i + 1, right, 0);
+            if (leftAmbiguous && rightAmbiguous) {
+                return true;
+            }
+        }
+    }
+    
+    return false;
+}
+
+int main() {
+    char input[50];
+    printf("Enter the input string: ");
+    scanf("%s", input);
+
+    bool ambiguous = isAmbiguous(input, 0, strlen(input) - 1, 0);
+
+    if (ambiguous) {
+        printf("The grammar is ambiguous.\n");
+    } else {
+        printf("The grammar is not ambiguous.\n");
+    }
+
+    return 0;
+}
