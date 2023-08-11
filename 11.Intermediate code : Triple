@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Triple {
+    char op;
+    char arg1;
+    char arg2;
+};
+
+void generateTriple(char op, char arg1, char arg2) {
+    printf("(%c, %c, %c)\n", op, arg1, arg2);
+}
+
+int main() {
+    struct Triple tripleList[100];
+    int tripleCount = 0;
+    
+    char t1 = 't', t2 = 't', t3 = 't';
+    
+    // Example expressions
+    char a = 'a', b = 'b', c = 'c';
+    
+    generateTriple('+', a, b);
+    generateTriple('*', t1, c);
+    generateTriple('-', t2, b);
+    generateTriple('=', t3, a);
+    
+    return 0;
+}
